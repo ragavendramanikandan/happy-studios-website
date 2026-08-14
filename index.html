@@ -36,6 +36,91 @@ body {
   overflow-x: hidden;
 }
 
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+@keyframes floatSlow {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  50% { transform: translate(18px,-24px) scale(1.06); }
+}
+@keyframes driftSlow {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  50% { transform: translate(-24px,20px) scale(1.08); }
+}
+@keyframes fadeRiseIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  0% { transform: translateX(-120%) skewX(-15deg); }
+  100% { transform: translateX(220%) skewX(-15deg); }
+}
+@keyframes gentleSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─── FILM GRAIN OVERLAY ─── */
+.grain-layer {
+  position: fixed; inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grainShift 0.4s steps(2) infinite;
+}
+@keyframes grainShift {
+  0%   { transform: translate(0,0); }
+  50%  { transform: translate(-1%,1%); }
+  100% { transform: translate(1%,-1%); }
+}
+
+/* Cinematic photo treatment: subtle contrast/saturation grade + vignette, applied via wrapper */
+.cine {
+  position: relative;
+  overflow: hidden;
+}
+.cine img {
+  filter: saturate(1.08) contrast(1.05) brightness(1.01);
+}
+.cine::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(20,12,10,0.28) 120%);
+  pointer-events: none;
+}
+
+/* Blur-up cinematic reveal for images entering the viewport (opacity/scale only,
+   so it never fights with each section's own color-grade filter on the image) */
+.img-reveal {
+  transform: scale(1.08);
+  opacity: 0;
+  transition: transform 1.1s cubic-bezier(0.22,1,0.36,1), opacity 0.9s ease;
+}
+.img-reveal.loaded {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Glass panel utility */
+.glass {
+  background: rgba(253,250,248,0.14);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  border: 1px solid rgba(253,250,248,0.25);
+}
+
 /* ─── SCROLLBAR ─── */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--blush); }
@@ -64,7 +149,9 @@ nav.scrolled { box-shadow: 0 4px 30px rgba(43,31,27,0.08); }
   display: flex; align-items: center; justify-content: center;
   font-size: 1rem;
   flex-shrink: 0;
+  transition: transform 0.5s cubic-bezier(0.22,1,0.36,1);
 }
+.nav-brand:hover .nav-logo-icon { transform: rotate(-18deg) scale(1.1); }
 .nav-brand-name {
   font-family: var(--serif);
   font-size: 1.35rem;
@@ -144,6 +231,29 @@ nav.scrolled { box-shadow: 0 4px 30px rgba(43,31,27,0.08); }
   padding-top: 70px;
   overflow: hidden;
   background: var(--blush);
+  position: relative;
+  perspective: 1400px;
+}
+
+.hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.55;
+}
+.hero-orb.o1 {
+  width: 340px; height: 340px;
+  top: -60px; left: 2vw;
+  background: radial-gradient(circle, rgba(196,123,98,0.5), transparent 70%);
+  animation: floatSlow 13s ease-in-out infinite;
+}
+.hero-orb.o2 {
+  width: 260px; height: 260px;
+  bottom: 0; left: 28vw;
+  background: radial-gradient(circle, rgba(139,94,107,0.4), transparent 70%);
+  animation: driftSlow 16s ease-in-out infinite;
 }
 
 .hero-text {
@@ -151,6 +261,11 @@ nav.scrolled { box-shadow: 0 4px 30px rgba(43,31,27,0.08); }
   position: relative;
   z-index: 2;
 }
+.hero-text > * { animation: fadeRiseIn 0.9s ease both; }
+.hero-text .hero-pill { animation-delay: 0.05s; }
+.hero-text h1.hero-headline { animation-delay: 0.18s; }
+.hero-text .hero-sub { animation-delay: 0.32s; }
+.hero-text .hero-btns { animation-delay: 0.46s; }
 
 .hero-pill {
   display: inline-flex; align-items: center; gap: 0.5rem;
@@ -203,7 +318,19 @@ h1.hero-headline em {
   text-decoration: none;
   transition: background var(--trans), transform var(--trans), box-shadow var(--trans);
   letter-spacing: 0.02em;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
 }
+.btn-fill::before {
+  content: '';
+  position: absolute; top: 0; left: 0;
+  width: 40%; height: 100%;
+  background: linear-gradient(115deg, transparent, rgba(255,255,255,0.45), transparent);
+  transform: translateX(-220%) skewX(-20deg);
+  z-index: 1;
+}
+.btn-fill:hover::before { animation: shimmer 0.85s ease forwards; }
 .btn-fill:hover {
   background: var(--rose-dk);
   transform: translateY(-2px);
@@ -232,6 +359,7 @@ h1.hero-headline em {
   position: relative;
   height: 100vh;
   min-height: 600px;
+  perspective: 1400px;
 }
 .hero-collage {
   position: absolute; inset: 0;
@@ -240,18 +368,34 @@ h1.hero-headline em {
   grid-template-columns: 55% 45%;
   grid-template-rows: 1fr 1fr;
   gap: 10px;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 .hc-img {
   border-radius: 12px;
   overflow: hidden;
   position: relative;
+  box-shadow: 0 20px 45px rgba(43,31,27,0.18);
+  transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), box-shadow 0.5s ease;
+  will-change: transform;
+  animation: fadeRiseIn 0.9s ease both;
 }
+.hc-img::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(20,12,10,0.3) 125%);
+  pointer-events: none;
+}
+.hc-img:nth-child(1) { animation-delay: 0.15s; }
+.hc-img:nth-child(2) { animation-delay: 0.32s; }
+.hc-img:nth-child(3) { animation-delay: 0.48s; }
+.hc-img:hover { box-shadow: 0 28px 60px rgba(43,31,27,0.28); }
 .hc-img img {
   width: 100%; height: 100%;
   object-fit: cover;
-  transition: transform 0.7s ease;
+  transition: transform 0.7s ease, opacity 0.9s ease;
 }
-.hc-img:hover img { transform: scale(1.04); }
+.hc-img:hover img { transform: scale(1.06); }
 .hc-img.tall { grid-row: 1 / 3; border-radius: 16px; }
 .hc-img.offset { margin-top: 2.5rem; }
 
@@ -265,7 +409,10 @@ h1.hero-headline em {
   box-shadow: 0 8px 32px rgba(43,31,27,0.12);
   display: flex; align-items: center; gap: 0.8rem;
   z-index: 10;
+  animation: fadeRiseIn 0.9s ease 0.7s both, floatY 5s ease-in-out 1.6s infinite;
 }
+.badge-icon { transition: transform 0.4s ease; }
+.hero-badge:hover .badge-icon { transform: rotate(-12deg) scale(1.15); }
 .badge-icon { font-size: 1.6rem; }
 .badge-text { display: flex; flex-direction: column; }
 .badge-num {
@@ -316,12 +463,23 @@ h2.section-h em { font-style: italic; color: var(--rose); }
 
 .about-img-wrap {
   position: relative;
+  perspective: 1200px;
 }
 .about-img-main {
   width: 100%;
   aspect-ratio: 4/5;
   border-radius: 20px;
   overflow: hidden;
+  transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), box-shadow 0.5s ease;
+  will-change: transform;
+  box-shadow: 0 20px 45px rgba(43,31,27,0.12);
+  position: relative;
+}
+.about-img-main::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(20,12,10,0.25) 125%);
+  pointer-events: none;
 }
 .about-img-main img {
   width: 100%; height: 100%;
@@ -337,6 +495,12 @@ h2.section-h em { font-style: italic; color: var(--rose); }
   right: -2.5rem;
   border: 5px solid var(--white);
   box-shadow: 0 8px 32px rgba(43,31,27,0.15);
+  transition: transform 0.45s cubic-bezier(0.22,1,0.36,1);
+  will-change: transform;
+}
+.about-img-wrap:hover .about-img-accent {
+  transform: translate3d(0,0,40px) scale(1.06) rotate(-2deg);
+  box-shadow: 0 20px 50px rgba(43,31,27,0.25);
 }
 .about-img-accent img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -392,22 +556,30 @@ h2.section-h em { font-style: italic; color: var(--rose); }
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform var(--trans), box-shadow var(--trans);
+  transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), box-shadow 0.35s ease;
   cursor: default;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
-.svc-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 16px 48px rgba(43,31,27,0.1);
+.svc-card.tilting {
+  box-shadow: 0 24px 55px rgba(43,31,27,0.16);
 }
 .svc-photo {
   height: 220px;
   overflow: hidden;
   position: relative;
 }
+.svc-photo::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(20,12,10,0.22) 130%);
+  pointer-events: none;
+}
 .svc-photo img {
   width: 100%; height: 100%;
   object-fit: cover;
-  transition: transform 0.7s ease;
+  transition: transform 0.7s ease, opacity 0.9s ease;
+  filter: saturate(1.08) contrast(1.04);
 }
 .svc-card:hover .svc-photo img { transform: scale(1.05); }
 
@@ -481,39 +653,62 @@ h2.section-h em { font-style: italic; color: var(--rose); }
   overflow: hidden;
   position: relative;
   cursor: pointer;
+  transition: transform 0.45s cubic-bezier(0.22,1,0.36,1), box-shadow 0.45s ease;
+  will-change: transform;
 }
 .g-item.wide { grid-column: span 2; }
 .g-item.tall { grid-row: span 2; }
+.g-item:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 22px 45px rgba(43,31,27,0.3);
+  z-index: 5;
+}
 
 .g-item img {
   width: 100%; height: 100%;
   object-fit: cover;
-  transition: transform 0.6s ease, filter 0.4s;
-  filter: brightness(0.92);
+  transition: transform 0.6s ease, filter 0.4s, opacity 0.9s ease;
+  filter: brightness(0.92) saturate(1.12) contrast(1.06);
 }
-.g-item:hover img { transform: scale(1.06); filter: brightness(0.7); }
+.g-item:hover img { transform: scale(1.1); filter: brightness(0.7) saturate(1.15) contrast(1.08); }
+.g-item::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, transparent 50%, rgba(20,12,10,0.35) 130%);
+  pointer-events: none;
+}
 
 .g-overlay {
   position: absolute; inset: 0;
   display: flex; flex-direction: column;
   justify-content: flex-end;
   padding: 1.2rem;
-  background: linear-gradient(transparent 50%, rgba(43,31,27,0.65));
-  opacity: 0; transition: opacity 0.35s;
+  background: linear-gradient(transparent 45%, rgba(43,31,27,0.7));
+  opacity: 0; transition: opacity 0.35s, transform 0.4s cubic-bezier(0.22,1,0.36,1);
+  transform: translateY(10px);
 }
-.g-item:hover .g-overlay { opacity: 1; }
+.g-item:hover .g-overlay { opacity: 1; transform: translateY(0); }
 .g-cat {
+  display: inline-block;
   font-size: 0.62rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(253,250,248,0.8);
-  margin-bottom: 0.2rem;
+  color: rgba(253,250,248,0.9);
+  margin-bottom: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 100px;
+  background: rgba(253,250,248,0.14);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(253,250,248,0.25);
+  width: fit-content;
 }
 .g-title {
   font-family: var(--serif);
   font-size: 1rem;
   color: var(--white);
   font-weight: 600;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
 }
 
 /* ─── WHY CHOOSE ─── */
@@ -521,7 +716,21 @@ h2.section-h em { font-style: italic; color: var(--rose); }
   padding: 7rem 8vw;
   background: var(--ink);
   color: var(--white);
+  position: relative;
+  overflow: hidden;
 }
+#why::before {
+  content: '';
+  position: absolute;
+  width: 500px; height: 500px;
+  left: var(--spot-x, 50%); top: var(--spot-y, 30%);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(196,123,98,0.16), transparent 70%);
+  pointer-events: none;
+  transition: left 0.3s ease-out, top 0.3s ease-out;
+  z-index: 0;
+}
+#why > * { position: relative; z-index: 1; }
 .why-header {
   text-align: center;
   margin-bottom: 4rem;
@@ -541,13 +750,27 @@ h2.section-h em { font-style: italic; color: var(--rose); }
   border: 1px solid rgba(253,250,248,0.08);
   border-radius: 14px;
   padding: 2rem 1.6rem;
-  transition: background var(--trans), transform var(--trans);
+  transition: background var(--trans), transform 0.35s cubic-bezier(0.22,1,0.36,1), box-shadow 0.35s ease;
+  transform-style: preserve-3d;
+  will-change: transform;
+  position: relative;
+  overflow: hidden;
 }
-.why-card:hover {
+.why-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(115deg, transparent 40%, rgba(196,123,98,0.35) 50%, transparent 60%);
+  transform: translateX(-120%) skewX(-15deg);
+  pointer-events: none;
+}
+.why-card.tilting {
   background: rgba(196,123,98,0.12);
   border-color: rgba(196,123,98,0.25);
-  transform: translateY(-4px);
+  box-shadow: 0 20px 45px rgba(0,0,0,0.3);
 }
+.why-card.tilting::before { animation: shimmer 1s ease forwards; }
+.why-icon { transition: transform 0.4s cubic-bezier(0.22,1,0.36,1); }
+.why-card.tilting .why-icon { transform: translateZ(30px) scale(1.15); }
 .why-icon { font-size: 2.2rem; margin-bottom: 1.2rem; display: block; }
 .why-name {
   font-family: var(--serif);
@@ -594,13 +817,14 @@ h2.section-h em { font-style: italic; color: var(--rose); }
   padding: 2.5rem 2rem;
   display: flex; flex-direction: column;
   border: 1.5px solid var(--divider);
-  transition: transform var(--trans), box-shadow var(--trans), border-color var(--trans);
+  transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), box-shadow 0.35s ease, border-color var(--trans);
   position: relative;
   overflow: hidden;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
-.pkg-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 60px rgba(196,123,98,0.15);
+.pkg-card.tilting {
+  box-shadow: 0 26px 60px rgba(196,123,98,0.22);
   border-color: rgba(196,123,98,0.4);
 }
 .pkg-card.featured {
@@ -608,10 +832,12 @@ h2.section-h em { font-style: italic; color: var(--rose); }
   color: var(--white);
   border-color: var(--rose);
 }
-.pkg-card.featured:hover {
-  box-shadow: 0 20px 60px rgba(196,123,98,0.4);
+.pkg-card.featured.tilting {
+  box-shadow: 0 26px 65px rgba(196,123,98,0.45);
   border-color: var(--rose-dk);
 }
+.pkg-emoji { transition: transform 0.4s cubic-bezier(0.22,1,0.36,1); display: block; }
+.pkg-card.tilting .pkg-emoji { transform: translateZ(35px) scale(1.15) rotate(-6deg); }
 
 .pkg-badge {
   position: absolute; top: 0; right: 1.5rem;
@@ -712,6 +938,10 @@ h2.section-h em { font-style: italic; color: var(--rose); }
   display: flex; flex-direction: column; align-items: center; gap: 1.2rem;
 }
 
+@keyframes waPulse {
+  0%, 100% { box-shadow: 0 8px 28px rgba(37,211,102,0.25), 0 0 0 0 rgba(37,211,102,0.4); }
+  50% { box-shadow: 0 8px 28px rgba(37,211,102,0.35), 0 0 0 14px rgba(37,211,102,0); }
+}
 .btn-whatsapp {
   display: inline-flex; align-items: center; gap: 0.7rem;
   background: #25D366;
@@ -723,12 +953,16 @@ h2.section-h em { font-style: italic; color: var(--rose); }
   text-decoration: none;
   transition: background var(--trans), transform var(--trans), box-shadow var(--trans);
   letter-spacing: 0.02em;
+  animation: waPulse 2.6s ease-in-out infinite;
 }
 .btn-whatsapp:hover {
   background: #20b85a;
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.03);
   box-shadow: 0 8px 28px rgba(37,211,102,0.35);
+  animation-play-state: paused;
 }
+.btn-whatsapp svg { transition: transform 0.4s ease; }
+.btn-whatsapp:hover svg { transform: rotate(-10deg) scale(1.1); }
 
 .contact-meta {
   display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; justify-content: center;
@@ -890,10 +1124,10 @@ footer {
 /* ─── SCROLL REVEAL ─── */
 .reveal {
   opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.65s ease, transform 0.65s ease;
+  transform: perspective(1000px) translateY(32px) rotateX(6deg);
+  transition: opacity 0.75s cubic-bezier(0.22,1,0.36,1), transform 0.75s cubic-bezier(0.22,1,0.36,1);
 }
-.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal.visible { opacity: 1; transform: perspective(1000px) translateY(0) rotateX(0); }
 
 /* ─── LIGHTBOX ─── */
 .lightbox {
@@ -969,6 +1203,8 @@ footer {
 </head>
 <body>
 
+<div class="grain-layer" aria-hidden="true"></div>
+
 <!-- ─── MOBILE MENU ─── -->
 <div class="mobile-menu" id="mobileMenu">
   <button class="mobile-close" id="menuClose">×</button>
@@ -1017,13 +1253,13 @@ footer {
   <div class="hero-visual">
     <div class="hero-collage">
       <div class="hc-img tall">
-        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80" alt="Wedding photography">
+        <img class="img-reveal" src="https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80" alt="Wedding photography">
       </div>
       <div class="hc-img">
-        <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&q=80" alt="Portrait">
+        <img class="img-reveal" src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&q=80" alt="Portrait">
       </div>
       <div class="hc-img offset">
-        <img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=400&q=80" alt="Pre-wedding">
+        <img class="img-reveal" src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=400&q=80" alt="Pre-wedding">
       </div>
     </div>
     <div class="hero-badge">
@@ -1040,10 +1276,10 @@ footer {
 <section id="about">
   <div class="about-img-wrap reveal">
     <div class="about-img-main">
-      <img src="https://images.unsplash.com/photo-1554048612-b6a482bc67e5?w=700&q=80" alt="Photographer at work">
+      <img class="img-reveal" src="https://images.unsplash.com/photo-1554048612-b6a482bc67e5?w=700&q=80" alt="Photographer at work">
     </div>
     <div class="about-img-accent">
-      <img src="https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=400&q=80" alt="Studio shot">
+      <img class="img-reveal" src="https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=400&q=80" alt="Studio shot">
     </div>
   </div>
 
@@ -1081,7 +1317,7 @@ footer {
   <div class="services-grid">
     <div class="svc-card reveal">
       <div class="svc-photo">
-        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=700&q=80" alt="Wedding Photography" loading="lazy">
+        <img class="img-reveal" src="https://images.unsplash.com/photo-1519741497674-611481863552?w=700&q=80" alt="Wedding Photography" loading="lazy">
       </div>
       <div class="svc-body">
         <span class="svc-icon">💍</span>
@@ -1092,7 +1328,7 @@ footer {
 
     <div class="svc-card reveal">
       <div class="svc-photo">
-        <img src="https://images.unsplash.com/photo-1529636444744-adffc9135a5e?w=700&q=80" alt="Pre-Wedding Photography" loading="lazy">
+        <img class="img-reveal" src="https://images.unsplash.com/photo-1529636444744-adffc9135a5e?w=700&q=80" alt="Pre-Wedding Photography" loading="lazy">
       </div>
       <div class="svc-body">
         <span class="svc-icon">💑</span>
@@ -1103,7 +1339,7 @@ footer {
 
     <div class="svc-card reveal">
       <div class="svc-photo">
-        <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=700&q=80" alt="Portrait Photography" loading="lazy">
+        <img class="img-reveal" src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=700&q=80" alt="Portrait Photography" loading="lazy">
       </div>
       <div class="svc-body">
         <span class="svc-icon">🖼️</span>
@@ -1114,7 +1350,7 @@ footer {
 
     <div class="svc-card reveal">
       <div class="svc-photo">
-        <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=700&q=80" alt="Event Photography" loading="lazy">
+        <img class="img-reveal" src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=700&q=80" alt="Event Photography" loading="lazy">
       </div>
       <div class="svc-body">
         <span class="svc-icon">🎉</span>
@@ -1144,56 +1380,56 @@ footer {
 
   <div class="gallery-grid reveal" id="galleryGrid">
     <div class="g-item wide tall" data-cat="weddings">
-      <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80" alt="Wedding ceremony" loading="lazy">
+      <img class="img-reveal" src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80" alt="Wedding ceremony" loading="lazy">
       <div class="g-overlay">
         <span class="g-cat">Wedding</span>
         <span class="g-title">Wedding Ceremony</span>
       </div>
     </div>
     <div class="g-item" data-cat="portraits">
-      <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&q=80" alt="Portrait" loading="lazy">
+      <img class="img-reveal" src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&q=80" alt="Portrait" loading="lazy">
       <div class="g-overlay">
         <span class="g-cat">Portrait</span>
         <span class="g-title">Individual Portrait</span>
       </div>
     </div>
     <div class="g-item" data-cat="prewedding">
-      <img src="https://images.unsplash.com/photo-1529636444744-adffc9135a5e?w=400&q=80" alt="Pre-wedding" loading="lazy">
+      <img class="img-reveal" src="https://images.unsplash.com/photo-1529636444744-adffc9135a5e?w=400&q=80" alt="Pre-wedding" loading="lazy">
       <div class="g-overlay">
         <span class="g-cat">Pre-Wedding</span>
         <span class="g-title">Couple Session</span>
       </div>
     </div>
     <div class="g-item wide" data-cat="weddings">
-      <img src="https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=700&q=80" alt="Wedding portraits" loading="lazy">
+      <img class="img-reveal" src="https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=700&q=80" alt="Wedding portraits" loading="lazy">
       <div class="g-overlay">
         <span class="g-cat">Wedding</span>
         <span class="g-title">Bridal Portraits</span>
       </div>
     </div>
     <div class="g-item" data-cat="events">
-      <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&q=80" alt="Event" loading="lazy">
+      <img class="img-reveal" src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&q=80" alt="Event" loading="lazy">
       <div class="g-overlay">
         <span class="g-cat">Event</span>
         <span class="g-title">Celebration Evening</span>
       </div>
     </div>
     <div class="g-item" data-cat="portraits">
-      <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80" alt="Portrait" loading="lazy">
+      <img class="img-reveal" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80" alt="Portrait" loading="lazy">
       <div class="g-overlay">
         <span class="g-cat">Portrait</span>
         <span class="g-title">Professional Headshot</span>
       </div>
     </div>
     <div class="g-item" data-cat="prewedding">
-      <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&q=80" alt="Pre-wedding couple" loading="lazy">
+      <img class="img-reveal" src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&q=80" alt="Pre-wedding couple" loading="lazy">
       <div class="g-overlay">
         <span class="g-cat">Pre-Wedding</span>
         <span class="g-title">Golden Hour Shoot</span>
       </div>
     </div>
     <div class="g-item" data-cat="events">
-      <img src="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=400&q=80" alt="Birthday event" loading="lazy">
+      <img class="img-reveal" src="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=400&q=80" alt="Birthday event" loading="lazy">
       <div class="g-overlay">
         <span class="g-cat">Event</span>
         <span class="g-title">Birthday Celebration</span>
@@ -1478,6 +1714,109 @@ footer {
     );
     window.open(`https://wa.me/917845429247?text=${waText}`, '_blank');
   }
+
+  /* ─ Reduced motion check ─ */
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ─ Hero parallax: photo collage + orbs follow the cursor for a layered depth-of-field feel ─ */
+  const heroSection = document.getElementById('hero');
+  const hcImgs = document.querySelectorAll('.hc-img');
+  const heroOrbs = document.querySelectorAll('.hero-orb');
+  if (heroSection && !prefersReducedMotion) {
+    heroSection.addEventListener('mousemove', (e) => {
+      const xPos = (e.clientX / window.innerWidth) - 0.5;
+      const yPos = (e.clientY / window.innerHeight) - 0.5;
+      hcImgs.forEach((img, i) => {
+        const depth = (i + 1) * 10;
+        img.style.transform = `translate3d(${xPos * depth}px, ${yPos * depth}px, 0)`;
+      });
+      heroOrbs.forEach((orb, i) => {
+        const depth = (i + 1) * -18;
+        orb.style.transform = `translate3d(${xPos * depth}px, ${yPos * depth}px, 0)`;
+      });
+    });
+    heroSection.addEventListener('mouseleave', () => {
+      hcImgs.forEach(img => { img.style.transform = 'translate3d(0,0,0)'; });
+    });
+
+    /* Gentle scroll parallax for the whole collage */
+    window.addEventListener('scroll', () => {
+      const collage = document.querySelector('.hero-collage');
+      if (collage) collage.style.marginTop = `${Math.min(window.scrollY * 0.15, 80)}px`;
+    });
+  }
+
+  /* ─ 3D tilt for cards ─ */
+  function addTilt(selector, { max = 10, scale = 1.03 } = {}) {
+    if (prefersReducedMotion) return;
+    document.querySelectorAll(selector).forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const r = card.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width;
+        const py = (e.clientY - r.top) / r.height;
+        const rotateY = (px - 0.5) * max * 2;
+        const rotateX = (0.5 - py) * max * 2;
+        card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${scale})`;
+        card.classList.add('tilting');
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+        card.classList.remove('tilting');
+      });
+    });
+  }
+  addTilt('.svc-card', { max: 6, scale: 1.02 });
+  addTilt('.why-card', { max: 8, scale: 1.03 });
+  addTilt('.pkg-card', { max: 6, scale: 1.02 });
+
+  /* ─ Animated count-up for the hero badge number ─ */
+  const badgeNum = document.querySelector('.badge-num');
+  if (badgeNum && !prefersReducedMotion) {
+    const target = parseInt(badgeNum.textContent, 10) || 0;
+    let counted = false;
+    const countObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !counted) {
+          counted = true;
+          const duration = 1400;
+          const start = performance.now();
+          function tick(now) {
+            const progress = Math.min((now - start) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            badgeNum.textContent = Math.round(eased * target) + '+';
+            if (progress < 1) requestAnimationFrame(tick);
+          }
+          requestAnimationFrame(tick);
+        }
+      });
+    }, { threshold: 0.5 });
+    countObserver.observe(badgeNum);
+  }
+
+  /* ─ Spotlight glow that follows the cursor in the dark "Why Choose" section ─ */
+  const whySection = document.getElementById('why');
+  if (whySection && !prefersReducedMotion) {
+    whySection.addEventListener('mousemove', (e) => {
+      const r = whySection.getBoundingClientRect();
+      whySection.style.setProperty('--spot-x', `${e.clientX - r.left}px`);
+      whySection.style.setProperty('--spot-y', `${e.clientY - r.top}px`);
+    });
+  }
+
+  /* ─ Cinematic image reveal: photos materialize into focus as they enter view ─ */
+  const revealImgs = document.querySelectorAll('.img-reveal');
+  const imgObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('loaded'), i * 60);
+        imgObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+  revealImgs.forEach(img => {
+    if (img.complete) imgObserver.observe(img);
+    else img.addEventListener('load', () => imgObserver.observe(img));
+  });
 
   /* ─ Smooth nav active ─ */
   const sections = document.querySelectorAll('section[id]');
