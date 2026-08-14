@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Studio — Capturing Moments. Creating Memories.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+
+/* ─── RESET & ROOT ─── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+:root {
+  --blush:    #F2E8E1;   /* warm parchment bg */
+  --rose:     #C47B62;   /* dusty rose accent */
+  --rose-dk:  #A3614A;   /* deeper rose hover */
+  --mauve:    #8B5E6B;   /* secondary accent */
+  --ink:      #2B1F1B;   /* near-black text */
+  --ink-soft: #6B5650;   /* muted body text */
+  --white:    #FDFAF8;   /* off-white panels */
+  --divider:  rgba(43,31,27,0.1);
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans:  'Inter', system-ui, sans-serif;
+  --radius: 4px;
+  --trans: 0.3s ease;
+}
+
+body {
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-weight: 400;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--blush); }
+::-webkit-scrollbar-thumb { background: var(--rose); }
+
+/* ─── NAV ─── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.1rem 5vw;
+  background: rgba(253,250,248,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--divider);
+  transition: box-shadow var(--trans);
+}
+nav.scrolled { box-shadow: 0 4px 30px rgba(43,31,27,0.08); }
+
+.nav-brand {
+  display: flex; align-items: center; gap: 0.6rem;
+  text-decoration: none;
+}
+.nav-logo-icon {
+  width: 36px; height: 36px;
+  background: var(--rose);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.nav-brand-name {
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+.nav-links {
+  display: flex; gap: 2rem; list-style: none;
+}
+.nav-links a {
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: color var(--trans);
+}
+.nav-links a:hover { color: var(--rose); }
+
+.nav-cta {
+  background: var(--rose);
+  color: var(--white);
+  padding: 0.6rem 1.5rem;
+  border-radius: 100px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: background var(--trans), transform var(--trans);
+  white-space: nowrap;
+}
+.nav-cta:hover { background: var(--rose-dk); transform: translateY(-1px); }
+
+.nav-hamburger {
+  display: none;
+  flex-direction: column; gap: 5px;
+  cursor: pointer; padding: 4px;
+}
+.nav-hamburger span {
+  display: block; width: 22px; height: 2px;
+  background: var(--ink); border-radius: 2px;
+  transition: var(--trans);
+}
+
+/* Mobile menu */
+.mobile-menu {
+  display: none;
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 190;
+  background: var(--white);
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 2.5rem;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a {
+  font-family: var(--serif);
+  font-size: 2rem;
+  color: var(--ink);
+  text-decoration: none;
+  font-style: italic;
+  transition: color var(--trans);
+}
+.mobile-menu a:hover { color: var(--rose); }
+.mobile-close {
+  position: absolute; top: 1.5rem; right: 1.5rem;
+  background: none; border: none; font-size: 1.8rem;
+  cursor: pointer; color: var(--ink-soft);
+}
+
+/* ─── HERO ─── */
+#hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  padding-top: 70px;
+  overflow: hidden;
+  background: var(--blush);
+}
+
+.hero-text {
+  padding: 5rem 4rem 5rem 8vw;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-pill {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(196,123,98,0.12);
+  border: 1px solid rgba(196,123,98,0.25);
+  padding: 0.35rem 1rem;
+  border-radius: 100px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rose);
+  margin-bottom: 1.8rem;
+}
+.hero-pill::before { content: '📍'; font-size: 0.8rem; }
+
+h1.hero-headline {
+  font-family: var(--serif);
+  font-size: clamp(2.8rem, 5vw, 4.4rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 1.5rem;
+}
+h1.hero-headline em {
+  font-style: italic;
+  color: var(--rose);
+}
+
+.hero-sub {
+  font-size: 1rem;
+  color: var(--ink-soft);
+  line-height: 1.8;
+  max-width: 400px;
+  margin-bottom: 2.5rem;
+}
+
+.hero-btns {
+  display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;
+}
+
+.btn-fill {
+  background: var(--rose);
+  color: var(--white);
+  padding: 0.85rem 2rem;
+  border-radius: 100px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background var(--trans), transform var(--trans), box-shadow var(--trans);
+  letter-spacing: 0.02em;
+}
+.btn-fill:hover {
+  background: var(--rose-dk);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(196,123,98,0.35);
+}
+
+.btn-outline {
+  border: 1.5px solid var(--ink);
+  color: var(--ink);
+  padding: 0.85rem 2rem;
+  border-radius: 100px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--trans);
+  letter-spacing: 0.02em;
+}
+.btn-outline:hover {
+  background: var(--ink);
+  color: var(--white);
+  transform: translateY(-2px);
+}
+
+/* Hero image collage */
+.hero-visual {
+  position: relative;
+  height: 100vh;
+  min-height: 600px;
+}
+.hero-collage {
+  position: absolute; inset: 0;
+  padding: 4rem 4vw 4rem 2vw;
+  display: grid;
+  grid-template-columns: 55% 45%;
+  grid-template-rows: 1fr 1fr;
+  gap: 10px;
+}
+.hc-img {
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+.hc-img img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s ease;
+}
+.hc-img:hover img { transform: scale(1.04); }
+.hc-img.tall { grid-row: 1 / 3; border-radius: 16px; }
+.hc-img.offset { margin-top: 2.5rem; }
+
+/* Floating badge on hero image */
+.hero-badge {
+  position: absolute;
+  bottom: 5.5rem; left: 2.5vw;
+  background: var(--white);
+  border-radius: 12px;
+  padding: 1rem 1.4rem;
+  box-shadow: 0 8px 32px rgba(43,31,27,0.12);
+  display: flex; align-items: center; gap: 0.8rem;
+  z-index: 10;
+}
+.badge-icon { font-size: 1.6rem; }
+.badge-text { display: flex; flex-direction: column; }
+.badge-num {
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+}
+.badge-label { font-size: 0.7rem; color: var(--ink-soft); }
+
+/* ─── SECTION UTILITY ─── */
+.section-tag {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--rose);
+  margin-bottom: 0.9rem;
+}
+.section-tag::before {
+  content: '';
+  width: 28px; height: 1.5px;
+  background: var(--rose);
+  display: inline-block;
+}
+
+h2.section-h {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+h2.section-h em { font-style: italic; color: var(--rose); }
+
+/* ─── ABOUT ─── */
+#about {
+  padding: 7rem 8vw;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+  background: var(--white);
+}
+
+.about-img-wrap {
+  position: relative;
+}
+.about-img-main {
+  width: 100%;
+  aspect-ratio: 4/5;
+  border-radius: 20px;
+  overflow: hidden;
+}
+.about-img-main img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.about-img-accent {
+  position: absolute;
+  width: 55%;
+  aspect-ratio: 1;
+  border-radius: 14px;
+  overflow: hidden;
+  bottom: -2.5rem;
+  right: -2.5rem;
+  border: 5px solid var(--white);
+  box-shadow: 0 8px 32px rgba(43,31,27,0.15);
+}
+.about-img-accent img { width: 100%; height: 100%; object-fit: cover; }
+
+.about-content { display: flex; flex-direction: column; gap: 1.5rem; }
+
+.about-body {
+  font-size: 0.97rem;
+  color: var(--ink-soft);
+  line-height: 1.85;
+}
+
+.about-details {
+  display: flex; flex-direction: column; gap: 0.8rem;
+  margin-top: 0.5rem;
+}
+.about-detail {
+  display: flex; align-items: center; gap: 0.9rem;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  font-weight: 400;
+}
+.about-detail-icon {
+  width: 36px; height: 36px;
+  background: rgba(196,123,98,0.1);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+.about-detail strong { color: var(--ink); font-weight: 600; }
+
+/* ─── SERVICES ─── */
+#services {
+  padding: 7rem 8vw;
+  background: var(--blush);
+}
+.services-header {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+.services-header .section-tag { justify-content: center; }
+.services-header .section-tag::before { display: none; }
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.svc-card {
+  background: var(--white);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--trans), box-shadow var(--trans);
+  cursor: default;
+}
+.svc-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 48px rgba(43,31,27,0.1);
+}
+.svc-photo {
+  height: 220px;
+  overflow: hidden;
+  position: relative;
+}
+.svc-photo img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s ease;
+}
+.svc-card:hover .svc-photo img { transform: scale(1.05); }
+
+.svc-body { padding: 1.8rem; flex: 1; }
+.svc-icon { font-size: 1.6rem; margin-bottom: 0.8rem; display: block; }
+.svc-name {
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 0.6rem;
+}
+.svc-desc {
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+
+/* ─── GALLERY ─── */
+#gallery {
+  padding: 7rem 8vw;
+  background: var(--white);
+}
+.gallery-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+.gallery-intro { max-width: 480px; }
+.gallery-intro p {
+  font-size: 0.93rem;
+  color: var(--ink-soft);
+  margin-top: 0.6rem;
+  line-height: 1.7;
+}
+
+.gallery-filters {
+  display: flex; gap: 0.5rem; flex-wrap: wrap;
+}
+.gf-btn {
+  padding: 0.45rem 1.1rem;
+  border-radius: 100px;
+  border: 1.5px solid var(--divider);
+  background: none;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all var(--trans);
+  letter-spacing: 0.04em;
+}
+.gf-btn:hover, .gf-btn.active {
+  background: var(--rose);
+  border-color: var(--rose);
+  color: var(--white);
+}
+
+/* Masonry-style gallery grid */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 220px;
+  gap: 10px;
+}
+.g-item {
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+}
+.g-item.wide { grid-column: span 2; }
+.g-item.tall { grid-row: span 2; }
+
+.g-item img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease, filter 0.4s;
+  filter: brightness(0.92);
+}
+.g-item:hover img { transform: scale(1.06); filter: brightness(0.7); }
+
+.g-overlay {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.2rem;
+  background: linear-gradient(transparent 50%, rgba(43,31,27,0.65));
+  opacity: 0; transition: opacity 0.35s;
+}
+.g-item:hover .g-overlay { opacity: 1; }
+.g-cat {
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(253,250,248,0.8);
+  margin-bottom: 0.2rem;
+}
+.g-title {
+  font-family: var(--serif);
+  font-size: 1rem;
+  color: var(--white);
+  font-weight: 600;
+}
+
+/* ─── WHY CHOOSE ─── */
+#why {
+  padding: 7rem 8vw;
+  background: var(--ink);
+  color: var(--white);
+}
+.why-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+.why-header .section-tag { color: var(--rose); justify-content: center; }
+.why-header .section-tag::before { display: none; }
+.why-header h2.section-h { color: var(--white); }
+.why-header h2.section-h em { color: var(--rose); }
+
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+.why-card {
+  background: rgba(253,250,248,0.05);
+  border: 1px solid rgba(253,250,248,0.08);
+  border-radius: 14px;
+  padding: 2rem 1.6rem;
+  transition: background var(--trans), transform var(--trans);
+}
+.why-card:hover {
+  background: rgba(196,123,98,0.12);
+  border-color: rgba(196,123,98,0.25);
+  transform: translateY(-4px);
+}
+.why-icon { font-size: 2.2rem; margin-bottom: 1.2rem; display: block; }
+.why-name {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 0.6rem;
+}
+.why-desc {
+  font-size: 0.85rem;
+  color: rgba(253,250,248,0.6);
+  line-height: 1.7;
+}
+
+/* ─── PACKAGES ─── */
+#packages {
+  padding: 7rem 8vw;
+  background: var(--blush);
+}
+.packages-header {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+.packages-header .section-tag { justify-content: center; }
+.packages-header .section-tag::before { display: none; }
+
+.pkg-note {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin-top: 0.8rem;
+  font-style: italic;
+}
+
+.pkg-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.pkg-card {
+  background: var(--white);
+  border-radius: 18px;
+  padding: 2.5rem 2rem;
+  display: flex; flex-direction: column;
+  border: 1.5px solid var(--divider);
+  transition: transform var(--trans), box-shadow var(--trans), border-color var(--trans);
+  position: relative;
+  overflow: hidden;
+}
+.pkg-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px rgba(196,123,98,0.15);
+  border-color: rgba(196,123,98,0.4);
+}
+.pkg-card.featured {
+  background: var(--rose);
+  color: var(--white);
+  border-color: var(--rose);
+}
+.pkg-card.featured:hover {
+  box-shadow: 0 20px 60px rgba(196,123,98,0.4);
+  border-color: var(--rose-dk);
+}
+
+.pkg-badge {
+  position: absolute; top: 0; right: 1.5rem;
+  background: var(--ink);
+  color: var(--white);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.8rem;
+  border-radius: 0 0 8px 8px;
+}
+.pkg-card.featured .pkg-badge { background: rgba(0,0,0,0.25); }
+
+.pkg-emoji { font-size: 2.5rem; margin-bottom: 1.2rem; display: block; }
+.pkg-name {
+  font-family: var(--serif);
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--ink);
+}
+.pkg-card.featured .pkg-name { color: var(--white); }
+
+.pkg-tagline {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  margin-bottom: 1.8rem;
+  flex: 1;
+}
+.pkg-card.featured .pkg-tagline { color: rgba(253,250,248,0.8); }
+
+.pkg-features {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 0.6rem;
+  margin-bottom: 2rem;
+}
+.pkg-features li {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  display: flex; align-items: flex-start; gap: 0.6rem;
+  line-height: 1.5;
+}
+.pkg-card.featured .pkg-features li { color: rgba(253,250,248,0.85); }
+.pkg-features li::before {
+  content: '✓';
+  color: var(--rose);
+  font-weight: 700;
+  font-size: 0.75rem;
+  margin-top: 0.15rem;
+  flex-shrink: 0;
+}
+.pkg-card.featured .pkg-features li::before { color: rgba(253,250,248,0.9); }
+
+.pkg-divider {
+  height: 1px;
+  background: var(--divider);
+  margin-bottom: 1.5rem;
+}
+.pkg-card.featured .pkg-divider { background: rgba(253,250,248,0.2); }
+
+.pkg-cta {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.packages-footer-note {
+  text-align: center;
+  font-size: 0.83rem;
+  color: var(--ink-soft);
+  font-style: italic;
+  margin-top: 1rem;
+}
+
+/* ─── CONTACT / CTA ─── */
+#contact {
+  padding: 7rem 8vw;
+  background: var(--white);
+  text-align: center;
+}
+.contact-inner {
+  max-width: 680px;
+  margin: 0 auto;
+}
+.contact-inner .section-tag { justify-content: center; }
+.contact-inner .section-tag::before { display: none; }
+.contact-inner h2.section-h { margin-bottom: 1rem; }
+
+.contact-body {
+  font-size: 0.97rem;
+  color: var(--ink-soft);
+  line-height: 1.8;
+  margin-bottom: 2.5rem;
+}
+
+.contact-actions {
+  display: flex; flex-direction: column; align-items: center; gap: 1.2rem;
+}
+
+.btn-whatsapp {
+  display: inline-flex; align-items: center; gap: 0.7rem;
+  background: #25D366;
+  color: var(--white);
+  padding: 1rem 2.5rem;
+  border-radius: 100px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background var(--trans), transform var(--trans), box-shadow var(--trans);
+  letter-spacing: 0.02em;
+}
+.btn-whatsapp:hover {
+  background: #20b85a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(37,211,102,0.35);
+}
+
+.contact-meta {
+  display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; justify-content: center;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+.contact-meta a {
+  color: var(--rose);
+  text-decoration: none;
+  font-weight: 500;
+}
+.contact-meta a:hover { color: var(--rose-dk); }
+.contact-meta span { color: var(--divider); }
+
+/* Contact form card */
+.contact-form-wrap {
+  background: var(--blush);
+  border-radius: 20px;
+  padding: 3rem;
+  margin-top: 3.5rem;
+  text-align: left;
+}
+.form-title {
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.field { display: flex; flex-direction: column; gap: 0.4rem; }
+.field.full { grid-column: 1 / -1; }
+.field label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.field input, .field select, .field textarea {
+  background: var(--white);
+  border: 1.5px solid var(--divider);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  color: var(--ink);
+  outline: none;
+  transition: border-color var(--trans);
+  width: 100%;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--rose);
+}
+.field select option { background: var(--white); }
+.field textarea { resize: vertical; min-height: 90px; }
+.form-submit {
+  width: 100%;
+  margin-top: 0.8rem;
+  padding: 0.95rem;
+  background: var(--rose);
+  color: var(--white);
+  border: none;
+  border-radius: 100px;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: background var(--trans), transform var(--trans);
+}
+.form-submit:hover { background: var(--rose-dk); transform: translateY(-1px); }
+
+/* ─── FOOTER ─── */
+footer {
+  background: var(--ink);
+  padding: 4rem 8vw 2rem;
+  color: var(--white);
+}
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding-bottom: 3rem;
+  border-bottom: 1px solid rgba(253,250,248,0.08);
+  margin-bottom: 2rem;
+}
+.footer-brand {}
+.footer-logo {
+  font-family: var(--serif);
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.4rem;
+  display: block;
+}
+.footer-tagline {
+  font-size: 0.83rem;
+  color: rgba(253,250,248,0.5);
+  font-style: italic;
+  margin-bottom: 0.4rem;
+}
+.footer-loc {
+  font-size: 0.78rem;
+  color: rgba(253,250,248,0.4);
+  display: flex; align-items: center; gap: 0.4rem;
+}
+
+.footer-links-group { display: flex; flex-direction: column; gap: 0.7rem; }
+.footer-links-title {
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--rose);
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+.footer-links-group a {
+  font-size: 0.85rem;
+  color: rgba(253,250,248,0.55);
+  text-decoration: none;
+  transition: color var(--trans);
+}
+.footer-links-group a:hover { color: var(--white); }
+
+.footer-socials { display: flex; gap: 0.7rem; flex-wrap: wrap; }
+.social-btn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 100px;
+  border: 1px solid rgba(253,250,248,0.15);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(253,250,248,0.7);
+  text-decoration: none;
+  transition: all var(--trans);
+}
+.social-btn:hover { border-color: var(--rose); color: var(--white); background: rgba(196,123,98,0.15); }
+.social-btn.wa:hover { border-color: #25D366; background: rgba(37,211,102,0.12); }
+
+.footer-bottom {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.footer-copy {
+  font-size: 0.75rem;
+  color: rgba(253,250,248,0.3);
+}
+
+/* ─── SCROLL REVEAL ─── */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ─── LIGHTBOX ─── */
+.lightbox {
+  display: none;
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.9);
+  align-items: center; justify-content: center;
+  padding: 2rem;
+}
+.lightbox.open { display: flex; }
+.lightbox img {
+  max-width: 90vw; max-height: 85vh;
+  object-fit: contain;
+  border-radius: 8px;
+}
+.lightbox-close {
+  position: absolute; top: 1.5rem; right: 1.5rem;
+  background: none; border: none;
+  color: white; font-size: 2.5rem; cursor: pointer;
+  line-height: 1;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 1024px) {
+  .why-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .nav-links, .nav-cta { display: none; }
+  .nav-hamburger { display: flex; }
+
+  #hero { grid-template-columns: 1fr; min-height: 100vh; }
+  .hero-text { padding: 7rem 6vw 3rem; }
+  .hero-visual { height: 55vw; min-height: 280px; }
+  .hero-collage { padding: 1rem; }
+  .hero-badge { display: none; }
+
+  #about { grid-template-columns: 1fr; gap: 3rem; padding: 5rem 6vw; }
+  .about-img-accent { width: 45%; bottom: -1.5rem; right: -1rem; }
+
+  .services-grid { grid-template-columns: 1fr; }
+
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 180px;
+  }
+  .g-item.wide { grid-column: span 1; }
+
+  .why-grid { grid-template-columns: 1fr 1fr; }
+  .pkg-grid { grid-template-columns: 1fr; }
+  .pkg-card.featured { order: -1; }
+
+  #contact { padding: 5rem 6vw; }
+  .contact-form-wrap { padding: 2rem 1.5rem; }
+  .form-grid { grid-template-columns: 1fr; }
+
+  .footer-top { flex-direction: column; gap: 2.5rem; }
+  footer { padding: 3rem 6vw 2rem; }
+
+  section { padding: 5rem 6vw !important; }
+  #about { padding: 5rem 6vw !important; }
+  #contact { padding: 5rem 6vw !important; }
+}
+
+@media (max-width: 480px) {
+  .hero-btns { flex-direction: column; align-items: stretch; text-align: center; }
+  .btn-fill, .btn-outline { text-align: center; }
+  .why-grid { grid-template-columns: 1fr; }
+  .gallery-grid { grid-template-columns: 1fr 1fr; grid-auto-rows: 140px; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ─── MOBILE MENU ─── -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" id="menuClose">×</button>
+  <a href="#about" onclick="closeMobileMenu()">About</a>
+  <a href="#services" onclick="closeMobileMenu()">Services</a>
+  <a href="#gallery" onclick="closeMobileMenu()">Gallery</a>
+  <a href="#packages" onclick="closeMobileMenu()">Packages</a>
+  <a href="#contact" onclick="closeMobileMenu()">Contact</a>
+</div>
+
+<!-- ─── NAV ─── -->
+<nav id="navbar">
+  <a href="#hero" class="nav-brand">
+    <div class="nav-logo-icon">📸</div>
+    <span class="nav-brand-name">Happy Studio</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#packages">Packages</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="https://wa.me/917845429247" target="_blank" class="nav-cta">Book a Session</a>
+  <div class="nav-hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <div class="hero-text">
+    <div class="hero-pill">Dindigul, Tamil Nadu</div>
+    <h1 class="hero-headline">
+      Capturing Moments.<br><em>Creating Memories.</em>
+    </h1>
+    <p class="hero-sub">
+      Professional photography for weddings, celebrations, portraits and every special moment worth remembering.
+    </p>
+    <div class="hero-btns">
+      <a href="#gallery" class="btn-fill">View Our Work</a>
+      <a href="#contact" class="btn-outline">Book a Session</a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="hero-collage">
+      <div class="hc-img tall">
+        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80" alt="Wedding photography">
+      </div>
+      <div class="hc-img">
+        <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&q=80" alt="Portrait">
+      </div>
+      <div class="hc-img offset">
+        <img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=400&q=80" alt="Pre-wedding">
+      </div>
+    </div>
+    <div class="hero-badge">
+      <span class="badge-icon">📷</span>
+      <div class="badge-text">
+        <span class="badge-num">500+</span>
+        <span class="badge-label">Happy Moments Captured</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── ABOUT ─── -->
+<section id="about">
+  <div class="about-img-wrap reveal">
+    <div class="about-img-main">
+      <img src="https://images.unsplash.com/photo-1554048612-b6a482bc67e5?w=700&q=80" alt="Photographer at work">
+    </div>
+    <div class="about-img-accent">
+      <img src="https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=400&q=80" alt="Studio shot">
+    </div>
+  </div>
+
+  <div class="about-content reveal">
+    <div>
+      <p class="section-tag">About Happy Studio</p>
+      <h2 class="section-h">Your Moments,<br><em>Our Passion</em></h2>
+    </div>
+    <p class="about-body">
+      At Happy Studio, we believe every special moment deserves to be remembered beautifully.
+    </p>
+    <p class="about-body">
+      From intimate portraits to grand celebrations, our goal is to capture genuine emotions, beautiful details and unforgettable memories through photography.
+    </p>
+    <div class="about-details">
+      <div class="about-detail">
+        <div class="about-detail-icon">📸</div>
+        <span><strong>Experience:</strong> Professional photography</span>
+      </div>
+      <div class="about-detail">
+        <div class="about-detail-icon">📍</div>
+        <span><strong>Location:</strong> Dindigul, Tamil Nadu</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SERVICES ─── -->
+<section id="services">
+  <div class="services-header reveal">
+    <p class="section-tag">Our Photography</p>
+    <h2 class="section-h">What We <em>Capture</em></h2>
+  </div>
+
+  <div class="services-grid">
+    <div class="svc-card reveal">
+      <div class="svc-photo">
+        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=700&q=80" alt="Wedding Photography" loading="lazy">
+      </div>
+      <div class="svc-body">
+        <span class="svc-icon">💍</span>
+        <h3 class="svc-name">Wedding Photography</h3>
+        <p class="svc-desc">Beautifully capture every emotion, celebration and unforgettable moment from your special day.</p>
+      </div>
+    </div>
+
+    <div class="svc-card reveal">
+      <div class="svc-photo">
+        <img src="https://images.unsplash.com/photo-1529636444744-adffc9135a5e?w=700&q=80" alt="Pre-Wedding Photography" loading="lazy">
+      </div>
+      <div class="svc-body">
+        <span class="svc-icon">💑</span>
+        <h3 class="svc-name">Pre-Wedding Photography</h3>
+        <p class="svc-desc">Relaxed and creative couple sessions designed to tell your unique story.</p>
+      </div>
+    </div>
+
+    <div class="svc-card reveal">
+      <div class="svc-photo">
+        <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=700&q=80" alt="Portrait Photography" loading="lazy">
+      </div>
+      <div class="svc-body">
+        <span class="svc-icon">🖼️</span>
+        <h3 class="svc-name">Portrait Photography</h3>
+        <p class="svc-desc">Professional portraits for individuals, families, portfolios and special occasions.</p>
+      </div>
+    </div>
+
+    <div class="svc-card reveal">
+      <div class="svc-photo">
+        <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=700&q=80" alt="Event Photography" loading="lazy">
+      </div>
+      <div class="svc-body">
+        <span class="svc-icon">🎉</span>
+        <h3 class="svc-name">Event Photography</h3>
+        <p class="svc-desc">From birthdays to celebrations and special events, we capture the moments you'll want to remember.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── GALLERY ─── -->
+<section id="gallery">
+  <div class="gallery-header reveal">
+    <div class="gallery-intro">
+      <p class="section-tag">Our Work</p>
+      <h2 class="section-h">Moments We've <em>Captured</em></h2>
+      <p>A collection of our favourite photographs from weddings, portraits, celebrations and special occasions.</p>
+    </div>
+    <div class="gallery-filters">
+      <button class="gf-btn active" data-filter="all">All</button>
+      <button class="gf-btn" data-filter="weddings">Weddings</button>
+      <button class="gf-btn" data-filter="prewedding">Pre-Wedding</button>
+      <button class="gf-btn" data-filter="portraits">Portraits</button>
+      <button class="gf-btn" data-filter="events">Events</button>
+    </div>
+  </div>
+
+  <div class="gallery-grid reveal" id="galleryGrid">
+    <div class="g-item wide tall" data-cat="weddings">
+      <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80" alt="Wedding ceremony" loading="lazy">
+      <div class="g-overlay">
+        <span class="g-cat">Wedding</span>
+        <span class="g-title">Wedding Ceremony</span>
+      </div>
+    </div>
+    <div class="g-item" data-cat="portraits">
+      <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&q=80" alt="Portrait" loading="lazy">
+      <div class="g-overlay">
+        <span class="g-cat">Portrait</span>
+        <span class="g-title">Individual Portrait</span>
+      </div>
+    </div>
+    <div class="g-item" data-cat="prewedding">
+      <img src="https://images.unsplash.com/photo-1529636444744-adffc9135a5e?w=400&q=80" alt="Pre-wedding" loading="lazy">
+      <div class="g-overlay">
+        <span class="g-cat">Pre-Wedding</span>
+        <span class="g-title">Couple Session</span>
+      </div>
+    </div>
+    <div class="g-item wide" data-cat="weddings">
+      <img src="https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=700&q=80" alt="Wedding portraits" loading="lazy">
+      <div class="g-overlay">
+        <span class="g-cat">Wedding</span>
+        <span class="g-title">Bridal Portraits</span>
+      </div>
+    </div>
+    <div class="g-item" data-cat="events">
+      <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&q=80" alt="Event" loading="lazy">
+      <div class="g-overlay">
+        <span class="g-cat">Event</span>
+        <span class="g-title">Celebration Evening</span>
+      </div>
+    </div>
+    <div class="g-item" data-cat="portraits">
+      <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80" alt="Portrait" loading="lazy">
+      <div class="g-overlay">
+        <span class="g-cat">Portrait</span>
+        <span class="g-title">Professional Headshot</span>
+      </div>
+    </div>
+    <div class="g-item" data-cat="prewedding">
+      <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&q=80" alt="Pre-wedding couple" loading="lazy">
+      <div class="g-overlay">
+        <span class="g-cat">Pre-Wedding</span>
+        <span class="g-title">Golden Hour Shoot</span>
+      </div>
+    </div>
+    <div class="g-item" data-cat="events">
+      <img src="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=400&q=80" alt="Birthday event" loading="lazy">
+      <div class="g-overlay">
+        <span class="g-cat">Event</span>
+        <span class="g-title">Birthday Celebration</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── WHY CHOOSE ─── -->
+<section id="why">
+  <div class="why-header reveal">
+    <p class="section-tag">Why Choose Happy Studio?</p>
+    <h2 class="section-h">Memories That Last <em>Forever</em></h2>
+  </div>
+  <div class="why-grid">
+    <div class="why-card reveal">
+      <span class="why-icon">📸</span>
+      <h3 class="why-name">Creative Photography</h3>
+      <p class="why-desc">We focus on natural moments and beautiful compositions that feel real, not staged.</p>
+    </div>
+    <div class="why-card reveal">
+      <span class="why-icon">❤️</span>
+      <h3 class="why-name">Emotion-Focused</h3>
+      <p class="why-desc">The little expressions and genuine emotions matter — we make sure they're never missed.</p>
+    </div>
+    <div class="why-card reveal">
+      <span class="why-icon">✨</span>
+      <h3 class="why-name">Personalised Experience</h3>
+      <p class="why-desc">Every photoshoot is planned around your occasion and preferences — no two sessions are alike.</p>
+    </div>
+    <div class="why-card reveal">
+      <span class="why-icon">🎯</span>
+      <h3 class="why-name">Professional Service</h3>
+      <p class="why-desc">From planning to final photographs, we aim to make the experience smooth and enjoyable.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PACKAGES ─── -->
+<section id="packages">
+  <div class="packages-header reveal">
+    <p class="section-tag">Our Packages</p>
+    <h2 class="section-h">Photography <em>Packages</em></h2>
+    <p class="pkg-note">Package details and pricing can be customised according to your requirements.</p>
+  </div>
+
+  <div class="pkg-grid">
+    <div class="pkg-card reveal">
+      <span class="pkg-emoji">🌸</span>
+      <h3 class="pkg-name">Essential</h3>
+      <p class="pkg-tagline">Perfect for smaller occasions and portrait sessions.</p>
+      <div class="pkg-divider"></div>
+      <ul class="pkg-features">
+        <li>Portrait or event session</li>
+        <li>Professional editing</li>
+        <li>Digital photo delivery</li>
+        <li>Online gallery access</li>
+      </ul>
+    </div>
+
+    <div class="pkg-card featured reveal">
+      <span class="pkg-badge">Most Popular</span>
+      <span class="pkg-emoji">💫</span>
+      <h3 class="pkg-name">Signature</h3>
+      <p class="pkg-tagline">A complete photography experience for important celebrations.</p>
+      <div class="pkg-divider"></div>
+      <ul class="pkg-features">
+        <li>Full-event or ceremony coverage</li>
+        <li>Multiple looks & locations</li>
+        <li>Premium edited photographs</li>
+        <li>Digital gallery + prints</li>
+        <li>Same-week preview delivery</li>
+      </ul>
+    </div>
+
+    <div class="pkg-card reveal">
+      <span class="pkg-emoji">👑</span>
+      <h3 class="pkg-name">Premium</h3>
+      <p class="pkg-tagline">Designed for couples and families who want comprehensive coverage.</p>
+      <div class="pkg-divider"></div>
+      <ul class="pkg-features">
+        <li>Full-day complete coverage</li>
+        <li>Pre + main event sessions</li>
+        <li>Unlimited edited images</li>
+        <li>Premium printed album</li>
+        <li>Priority delivery & support</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pkg-cta reveal">
+    <a href="https://wa.me/917845429247?text=Hi%20Happy%20Studio%2C%20I%27d%20like%20to%20know%20more%20about%20your%20photography%20packages." target="_blank" class="btn-fill" style="font-size:0.95rem; padding:0.95rem 2.5rem;">
+      Enquire for Packages
+    </a>
+  </div>
+  <p class="packages-footer-note">
+    ✦ All packages are fully customisable to fit your budget and needs
+  </p>
+</section>
+
+<!-- ─── CONTACT ─── -->
+<section id="contact">
+  <div class="contact-inner">
+    <div class="reveal">
+      <p class="section-tag">Let's Capture Your Story</p>
+      <h2 class="section-h">Have a Special Moment<br><em>Coming Up?</em></h2>
+    </div>
+    <p class="contact-body reveal">
+      Tell us about your event, photoshoot or celebration. We'd love to help turn those moments into memories.
+    </p>
+    <div class="contact-actions reveal">
+      <a href="https://wa.me/917845429247?text=Hi%2C%20I%27d%20like%20to%20book%20a%20photography%20session%20with%20Happy%20Studio." target="_blank" class="btn-whatsapp">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Enquire on WhatsApp
+      </a>
+      <div class="contact-meta">
+        <a href="tel:+917845429247">📞 +91 78454 29247</a>
+        <span>|</span>
+        <span>📍 Dindigul, Tamil Nadu</span>
+      </div>
+    </div>
+
+    <!-- Inline enquiry form -->
+    <div class="contact-form-wrap reveal">
+      <p class="form-title">Send us a Message</p>
+      <div class="form-grid">
+        <div class="field">
+          <label for="fname">Your Name</label>
+          <input type="text" id="fname" placeholder="e.g. Priya Ramesh">
+        </div>
+        <div class="field">
+          <label for="fphone">Phone Number</label>
+          <input type="tel" id="fphone" placeholder="+91 98xxx xxxxx">
+        </div>
+        <div class="field">
+          <label for="fservice">Service Needed</label>
+          <select id="fservice">
+            <option value="">Select a service…</option>
+            <option>Wedding Photography</option>
+            <option>Pre-Wedding Photography</option>
+            <option>Portrait Photography</option>
+            <option>Event Photography</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fdate">Event Date</label>
+          <input type="date" id="fdate">
+        </div>
+        <div class="field full">
+          <label for="fmsg">Tell us about your occasion</label>
+          <textarea id="fmsg" placeholder="Share a few details about your event, venue, or any special requests…"></textarea>
+        </div>
+      </div>
+      <button class="form-submit" onclick="handleFormSubmit()">Send Message →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <span class="footer-logo">Happy Studio</span>
+      <p class="footer-tagline">Capturing moments. Creating memories.</p>
+      <p class="footer-loc">📍 Dindigul, Tamil Nadu</p>
+    </div>
+
+    <div class="footer-links-group">
+      <p class="footer-links-title">Navigate</p>
+      <a href="#about">About Us</a>
+      <a href="#services">Services</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#packages">Packages</a>
+      <a href="#contact">Contact</a>
+    </div>
+
+    <div class="footer-links-group">
+      <p class="footer-links-title">Services</p>
+      <a href="#services">Wedding Photography</a>
+      <a href="#services">Pre-Wedding</a>
+      <a href="#services">Portraits</a>
+      <a href="#services">Events</a>
+    </div>
+
+    <div>
+      <p class="footer-links-title" style="margin-bottom:0.8rem;">Connect With Us</p>
+      <div class="footer-socials">
+        <a href="#" class="social-btn">📷 Instagram</a>
+        <a href="https://wa.me/917845429247" target="_blank" class="social-btn wa">💬 WhatsApp</a>
+        <a href="tel:+917845429247" class="social-btn">📞 Call</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2026 Happy Studio. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- ─── LIGHTBOX ─── -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lbClose">×</button>
+  <img src="" alt="Gallery image" id="lbImg">
+</div>
+
+<script>
+  /* ─ Nav scroll ─ */
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  /* ─ Mobile menu ─ */
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const menuClose = document.getElementById('menuClose');
+  hamburger.addEventListener('click', () => mobileMenu.classList.add('open'));
+  menuClose.addEventListener('click', () => mobileMenu.classList.remove('open'));
+  function closeMobileMenu() { mobileMenu.classList.remove('open'); }
+
+  /* ─ Scroll reveal ─ */
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        revealObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => revealObserver.observe(el));
+
+  /* ─ Gallery filter ─ */
+  const filterBtns = document.querySelectorAll('.gf-btn');
+  const galleryItems = document.querySelectorAll('.g-item');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      galleryItems.forEach(item => {
+        if (filter === 'all' || item.dataset.cat === filter) {
+          item.style.display = '';
+          item.style.opacity = '1';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  /* ─ Lightbox ─ */
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbClose = document.getElementById('lbClose');
+
+  galleryItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const src = item.querySelector('img').src;
+      lbImg.src = src;
+      lightbox.classList.add('open');
+    });
+  });
+  lbClose.addEventListener('click', () => lightbox.classList.remove('open'));
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) lightbox.classList.remove('open');
+  });
+
+  /* ─ Form submit ─ */
+  function handleFormSubmit() {
+    const name = document.getElementById('fname').value.trim();
+    const phone = document.getElementById('fphone').value.trim();
+    const service = document.getElementById('fservice').value;
+    const msg = document.getElementById('fmsg').value.trim();
+
+    if (!name) { alert('Please enter your name.'); return; }
+    if (!phone) { alert('Please enter your phone number.'); return; }
+
+    const waText = encodeURIComponent(
+      `Hi Happy Studio! 👋\n\nName: ${name}\nPhone: ${phone}\nService: ${service || 'Not specified'}\nMessage: ${msg || 'No additional details'}`
+    );
+    window.open(`https://wa.me/917845429247?text=${waText}`, '_blank');
+  }
+
+  /* ─ Smooth nav active ─ */
+  const sections = document.querySelectorAll('section[id]');
+  const navAs = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(sec => {
+      if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
+    });
+    navAs.forEach(a => {
+      a.style.color = a.getAttribute('href') === `#${current}` ? 'var(--rose)' : '';
+    });
+  });
+</script>
+</body>
+</html>
